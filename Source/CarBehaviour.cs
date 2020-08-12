@@ -18,7 +18,7 @@ namespace CustomizedAI
     public class CustomAI : VehicleAI
     {
 
-
+		// PARAMETERS
 		public static ushort VID = 8197; // You can change the vehicle ID here to focus on one vehicle
 		public static bool AllVehicles = false; // Set to true if you want to get all vehicles
 		public static float VangleFront = 0.5f;
@@ -28,18 +28,22 @@ namespace CustomizedAI
 		public static bool onlyVehicles = true;
 		public static bool onlyPedestrian = true;
 
-		public static int expandNodes = 3;
-		public static int expandPath = 3;
-		public static int NUM_BUILD = 10;
-		public static int NUM_VEHICLE_PARKED = 10;
-		public static int NUM_TREES = 1;
+		private static readonly int expandNodes = 3;
+		private static readonly int expandPath = 3;
+		private static readonly int NUM_BUILD = 10;
+		private static readonly int NUM_VEHICLE_PARKED = 10;
+		private static readonly int NUM_TREES = 1;
+
+		// STATISTICS VARIABLES
+		public static List<ushort> countVehicles = new List<ushort>();
+		public static int countCrossingPedestrian = 0;
+		
 		
 
+		// Implementing our AI from the AI already implemented in game "VehicleAI"
 
-        // Implementing our AI from the AI already implemented in game "VehicleAI"
-
-        // COPIED FROM CarAI class, modification are notified
-        public override Color GetColor(ushort vehicleID, ref Vehicle data, InfoManager.InfoMode infoMode)
+		// COPIED FROM CarAI class, modification are notified
+		public override Color GetColor(ushort vehicleID, ref Vehicle data, InfoManager.InfoMode infoMode)
 		{
 			if (infoMode == InfoManager.InfoMode.NoisePollution)
 			{
@@ -1191,10 +1195,10 @@ namespace CustomizedAI
 						}
 						#endregion
 
+						// Statistics
 
-
-
-
+						Counting(vehicleID, countVehicles);
+						Counting(otherID, countVehicles);
 
 
 
@@ -2025,6 +2029,14 @@ namespace CustomizedAI
 			index = 13;
 			return false;
 		}
+
+		public static void Counting(ushort ID, List<ushort> L)
+        {
+			if (!L.Contains(ID))
+            {
+				L.Add(ID);
+            }
+        }
 
 	}
 
