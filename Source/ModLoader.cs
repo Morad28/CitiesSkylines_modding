@@ -43,19 +43,6 @@ namespace CustomizedAI
         // Called when the level is loaded
         public override void OnLevelLoaded(LoadMode mode)
         {
-            // Renaming for better referencment
-            #region
-            PrefabCollection<VehicleInfo>.FindLoaded("773594206.MAZDA CX-5_Data").name = "Car";
-            
-
-            VehicleInfo Businfo = PrefabCollection<VehicleInfo>.FindLoaded("658859533.Scania Citywide LFDD_Data");
-            Businfo.name = "Bus";
-
-            VehicleInfo Businfo2 = PrefabCollection<VehicleInfo>.FindLoaded("Bus");
-            Businfo2.name = "Bus";
-
-            PrefabCollection<VehicleInfo>.FindLoaded("Oil Truck").name = "Truck" ;
-            #endregion
 
             // Writing 
             #region
@@ -90,8 +77,8 @@ namespace CustomizedAI
             createCheckBox(checkBox2, new Vector3(22f, 2f), new Vector3(14f, 164f + 130f + 5f), "Follow");
             checkBox.width = panel2.component.width;
 
-            #endregion  
-            
+            #endregion
+
             #region Collect Data from all vehicles button
             CitizenVehicleWorldInfoPanel panelB = UIView.library.Get<CitizenVehicleWorldInfoPanel>(typeof(CitizenVehicleWorldInfoPanel).Name);
             UICheckBox checkBoxB = panelB.component.AddUIComponent<UICheckBox>();
@@ -127,7 +114,7 @@ namespace CustomizedAI
             checkBoxOV.name = "No pedestrian";
             checkBoxOV.text = "No pedestrian";
 
-            checkBoxOV.relativePosition = new Vector3(14f+90f, 164f + 130f + 5f);
+            checkBoxOV.relativePosition = new Vector3(14f + 90f, 164f + 130f + 5f);
 
             panelG.component.height = 321f + 35f + 16f;
 
@@ -159,7 +146,7 @@ namespace CustomizedAI
             checkBoxOP.name = "No vehicles";
             checkBoxOP.text = "No vehicles";
 
-            checkBoxOP.relativePosition = new Vector3(14f + 120f-30f, 164f + 160f + 5f);
+            checkBoxOP.relativePosition = new Vector3(14f + 120f - 30f, 164f + 160f + 5f);
 
             panelH.component.height = 321f + 35f + 16f;
 
@@ -201,7 +188,7 @@ namespace CustomizedAI
             openingAngleui.textScale = 1.125f;
             openingAngleui.useGUILayout = true;
             openingAngleui.zOrder = 1;
-            openingAngleui.text =(Mathf.Acos( CustomAI.VangleFront) * 180 / Mathf.PI).ToString();
+            openingAngleui.text = (Mathf.Acos(CustomAI.VangleFront) * 180 / Mathf.PI).ToString();
             openingAngleui.allowFloats = true;
             openingAngleui.relativePosition = new Vector3(120f, 164f + 20f + 5f);
             panelC.component.height = 321f + 35f + 16f;
@@ -244,12 +231,12 @@ namespace CustomizedAI
             fwdAngleui.zOrder = 1;
             fwdAngleui.allowFloats = true;
             panelD.component.height = 321f + 35f + 16f;
-            fwdAngleui.text =(Mathf.Acos( CustomAI.angleMoveFWD)*180/Mathf.PI).ToString();
+            fwdAngleui.text = (Mathf.Acos(CustomAI.angleMoveFWD) * 180 / Mathf.PI).ToString();
             fwdAngleui.relativePosition = new Vector3(120f, 164f + 90f + 5f);
             #endregion
             // Backward angle
             #region
-            UITextField bwdangleui ;
+            UITextField bwdangleui;
             CitizenVehicleWorldInfoPanel panelE = UIView.library.Get<CitizenVehicleWorldInfoPanel>(typeof(CitizenVehicleWorldInfoPanel).Name);
             bwdangleui = panelE.component.AddUIComponent<UITextField>();
             bwdangleui.cursorWidth = 1;
@@ -285,7 +272,7 @@ namespace CustomizedAI
             bwdangleui.allowFloats = true;
             panelE.component.height = 321f + 35f + 16f;
             bwdangleui.text = (Mathf.Acos(-CustomAI.angleMoveBWD) * 180 / Mathf.PI).ToString();
-            bwdangleui.relativePosition = new Vector3(300f, 164f +30f + 5f);
+            bwdangleui.relativePosition = new Vector3(300f, 164f + 30f + 5f);
             #endregion
             // Distance
             #region
@@ -394,7 +381,53 @@ namespace CustomizedAI
 
             #endregion UI
 
-            // Timer
+
+            // Renaming for better referencment
+            #region
+            // Added to the custom AI  
+            PrefabCollection<VehicleInfo>.FindLoaded("773594206.MAZDA CX-5_Data").name = "Car";
+            
+
+            PrefabCollection<VehicleInfo>.FindLoaded("658859533.Scania Citywide LFDD_Data").name = "Bus";
+            
+
+            VehicleInfo Businfo2 = PrefabCollection<VehicleInfo>.FindLoaded("Bus");
+            
+
+            PrefabCollection<VehicleInfo>.FindLoaded("Oil Truck").name = "Truck" ;
+
+            // Keeped original AI
+            
+
+            //PrefabCollection<VehicleInfo>.FindLoaded("Ore Truck").name = "Truck";
+
+            //PrefabCollection<VehicleInfo>.FindLoaded("875955591.Container truck EU - KALMAR_Data").name = "Truck";
+
+            //PrefabCollection<VehicleInfo>.FindLoaded("Station-wagon").name = "Car";
+
+            //PrefabCollection<VehicleInfo>.FindLoaded("Electric Car 04").name = "Car";
+
+            //PrefabCollection<VehicleInfo>.FindLoaded("665226973.Tesla Model 3_Data").name = "Car";
+
+            //PrefabCollection<VehicleInfo>.FindLoaded("474665067.Ford Focus AD update_Data").name = "Car";
+
+            //PrefabCollection<VehicleInfo>.FindLoaded("757326158.Volvo XC90_Data").name = "Car";
+
+            //PrefabCollection<VehicleInfo>.FindLoaded("Jeep").name = "Car";
+
+            //PrefabCollection<VehicleInfo>.FindLoaded("Suv").name = "Car";
+
+            //PrefabCollection<VehicleInfo>.FindLoaded("Personal Electric Transport Ride").name = "Car";
+
+            //PrefabCollection<VehicleInfo>.FindLoaded("Camper Van 01").name = "Car";
+
+            //PrefabCollection<VehicleInfo>.FindLoaded("625698592.Volvo S60 II Police (SWE)_Data POLICE").name = "Police";
+
+            #endregion
+
+           
+
+            
            
 
 

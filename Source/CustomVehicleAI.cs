@@ -14,9 +14,9 @@ namespace CustomizedAI
 
     public class CustomVehicleAI : IUserMod
     {
-        public string Name => "CustomAI";
+        public string Name => "Scenario Generation";
 
-        public string Description => "abc";
+        public string Description => "Mod for extracting scenarios from the game";
 
         
     }

@@ -779,29 +779,29 @@ namespace CustomizedAI
 
 					// Get nearest buildings
 					#region Get nearest building
-					List<ushort> L = new List<ushort>();
-					ushort buildID = CustomGetNearestBuilding(vehicleData.GetLastFramePosition(), L);
-					L.Add(buildID);
+					List<ushort> listBuildings = new List<ushort>();
+					ushort buildID = CustomGetNearestBuilding(vehicleData.GetLastFramePosition(), listBuildings);
+					listBuildings.Add(buildID);
 					for (int i = 0; i <= NUM_BUILD; i++)
 					{
-						buildID = CustomGetNearestBuilding(vehicleData.GetLastFramePosition(), L);
-						L.Add(buildID);
+						buildID = CustomGetNearestBuilding(vehicleData.GetLastFramePosition(), listBuildings);
+						listBuildings.Add(buildID);
 						//Debug.Log(buildID);
 					}
 					#endregion
 
 					// Get nearest parked vehicles
 					#region parked vehicles
-					List<ushort> L1 = new List<ushort>();
-					ushort ran = GetNearestVehicle(vehicleData.GetLastFramePosition(), L1);
-					L1.Add(ran);
+					List<ushort> listParkedVehicles = new List<ushort>();
+					ushort ran = GetNearestVehicle(vehicleData.GetLastFramePosition(), listParkedVehicles);
+					listParkedVehicles.Add(ran);
 					for (int i = 0; i <= NUM_VEHICLE_PARKED; i++)
 					{
-						ran = GetNearestVehicle(vehicleData.GetLastFramePosition(), L1);
-						L1.Add(ran);
+						ran = GetNearestVehicle(vehicleData.GetLastFramePosition(), listParkedVehicles);
+						listParkedVehicles.Add(ran);
 						//Debug.Log(ran);
 					}
-					String strL1 = Concatenate(L1);
+					String strL1 = Concatenate(listParkedVehicles);
 					//Debug.Log("parked" + strL1);
 					#endregion
 
@@ -831,12 +831,12 @@ namespace CustomizedAI
 					Vector3 center = netManager.m_segments.m_buffer[positionCAR.m_segment].m_bounds.center; // We can already get the center of the road. 'netManager.m_segments.m_buffer[position.m_segment]' enables us to access one road
 					ushort startNode = netManager.m_segments.m_buffer[positionCAR.m_segment].m_startNode; // We can get the IDs of the nodes
 					ushort endNode = netManager.m_segments.m_buffer[positionCAR.m_segment].m_endNode;
-					Bezier3 myBezier = SegmentToBezier(positionCAR.m_segment); // For the implemation, see at the bottom of the file
-                    #endregion
+					Bezier3 myBezier = SegmentToBezier(positionCAR.m_segment); // For the implemation of SegmentToBezier , see at the bottom of the file
+					#endregion
 
-                    // Expanding roads
-                    #region Expanding roads
-                    int countDownNodes = expandNodes;
+					// Expanding roads
+					#region Expanding roads
+					int countDownNodes = expandNodes+1;
 					List<ushort> segments = new List<ushort>();
 					List<ushort> nodes = new List<ushort>();
 					nodes.Add(startNode);
@@ -874,43 +874,113 @@ namespace CustomizedAI
 					int posCount = pathManager.m_pathUnits.m_buffer[currentPath].m_positionCount;
 					ushort destination = pathManager.m_pathUnits.m_buffer[currentPath].GetPosition(posCount - 1).m_segment;
 
-                    #endregion
+					#endregion
 
-					// Writing and debugging
-                    #region
-                    // Open the file 
-                    StreamWriter sw = new StreamWriter(@"C:\Users\adeye\Desktop\Output1.txt", true);
+					// Get the destination only for expanded roads
+					#region
+
+					uint currPathB = currentPath;
+					ushort finalSegExpanded = 0;
+					if (expandPath >= 1)
+					{
+						int index;
+						while (GetIndexPosition(positionCAR, currPathB, out index) == false && currPathB != 0)
+						{
+							currPathB = pathManager.m_pathUnits.m_buffer[currPathB].m_nextPathUnit;
+
+						}
+
+						if (index + expandPath > 11)
+						{
+							currPathB = pathManager.m_pathUnits.m_buffer[currPathB].m_nextPathUnit;
+							int add = (index + expandPath) % 11;
+							finalSegExpanded = pathManager.m_pathUnits.m_buffer[currPathB].GetPosition(add).m_segment;
+						}
+						else
+						{
+							finalSegExpanded = pathManager.m_pathUnits.m_buffer[currPathB].GetPosition(index + expandPath).m_segment;
+
+						}
+
+						//Debug.Log("Final " + finalSegExpanded);
+
+					}
+					#endregion
+
+					// Writing and debugging : Extraction of scenarios
+					#region
+					// Open the file 
+					Building[] buildings = Singleton<BuildingManager>.instance.m_buildings.m_buffer;
+					VehicleParked[] vehicleParkeds = Singleton<VehicleManager>.instance.m_parkedVehicles.m_buffer;
+
+					StreamWriter sw = new StreamWriter(@"C:\Users\adeye\Desktop\Output1.txt", true);
 
 					// Debug.Log() is used to print in the game debugger when the game is running 
-					Debug.Log(vehicleData.Info.name + ", " +
-										vehicleID + "," +
-										vehicleData.GetLastFramePosition().x + "," +
-										vehicleData.GetLastFramePosition().z + "," +
-										vehicleData.GetLastFrameData().m_rotation.eulerAngles.x + "," +
-										vehicleData.GetLastFrameData().m_rotation.eulerAngles.y + "," +
-										myBezier.a + "," +
-										myBezier.b + "," +
-										myBezier.c + "," +
-										myBezier.d + "," +
-								 "Pedestrian" + ", " +
-										otherID + "," +
-										otherData.GetLastFramePosition().x + "," +
-										otherData.GetLastFramePosition().z);
+					//Debug.Log(vehicleData.Info.name + ", " +
+					//					vehicleID + "," +
+					//					vehicleData.GetLastFramePosition().x + "," +
+					//					vehicleData.GetLastFramePosition().z + "," +
+					//					vehicleData.GetLastFrameData().m_velocity.x + "," +
+					//					vehicleData.GetLastFrameData().m_velocity.z + "," +
+					//					vehicleData.GetLastFrameData().m_rotation.eulerAngles.x + "," +
+					//					vehicleData.GetLastFrameData().m_rotation.eulerAngles.y + "," +
+					//					myBezier.a + "," +
+					//					myBezier.b + "," +
+					//					myBezier.c + "," +
+					//					myBezier.d + "," +
+					//			 "Pedestrian" + ", " +
+					//					otherID + "," +
+					//					otherData.GetLastFramePosition().x + "," +
+					//					otherData.GetLastFramePosition().z);
 
 					// Write in the file
 
-					sw.WriteLine("ADEYE" + vehicleID + "," +
+					sw.WriteLine(vehicleData.Info.name + "," +
+										vehicleID + "," +
 										vehicleData.GetLastFramePosition().x + "," +
 										vehicleData.GetLastFramePosition().z + "," +
+										vehicleData.GetLastFrameData().m_velocity.x + "," +
+										vehicleData.GetLastFrameData().m_velocity.z + "," +
 										vehicleData.GetLastFrameData().m_rotation.eulerAngles.x + "," +
 										vehicleData.GetLastFrameData().m_rotation.eulerAngles.y + "," +
 										myBezier.a + "," +
 										myBezier.b + "," +
 										myBezier.c + "," +
 										myBezier.d + "," +
-								 "Pedestrian" + otherID + "," + 
-										otherData.GetLastFramePosition());
+								 "Pedestrian" + "," +
+										otherID + "," +
+										otherData.GetLastFramePosition().x + "," +
+										otherData.GetLastFramePosition().z);
 					
+					for (int i=0; i < listBuildings.Count(); i++)
+                    {
+						sw.Write("," + "BUILDINDS" + "," +
+							listBuildings[i] + ","  + 
+							buildings[listBuildings[i]].m_position.x + "," +
+							buildings[listBuildings[i]].m_position.z + "," +
+							buildings[listBuildings[i]].Info.m_size.x + "," +
+							buildings[listBuildings[i]].Info.m_size.z + "," +
+							buildings[listBuildings[i]].Info.m_size.y + "," +
+							buildings[listBuildings[i]].m_angle) ;
+                    }
+
+					for (int i = 0; i < listParkedVehicles.Count(); i++)
+					{
+						sw.Write("," + "PARKED" +"," +
+							listParkedVehicles[i] + "," +
+							vehicleParkeds[listParkedVehicles[i]].Info.name + "," +
+							vehicleParkeds[listParkedVehicles[i]].m_position.x + "," +
+							vehicleParkeds[listParkedVehicles[i]].m_position.z + "," +
+							vehicleParkeds[listParkedVehicles[i]].m_rotation.y);
+					}
+
+					for (int i=0; i< beziersExpanded.Count(); i ++)
+                    {
+						WriteBezier(beziersExpanded[i],sw);
+                    }
+
+
+					WriteBezier(SegmentToBezier(finalSegExpanded),sw);
 					// Close the file
 					sw.Close();
                     #endregion
@@ -989,29 +1059,29 @@ namespace CustomizedAI
 						
 						// Get nearest buildings
 						#region Get nearest building
-						List<ushort> L = new List<ushort>();
-						ushort buildID = CustomGetNearestBuilding(vehicleData.GetLastFramePosition(),L);
-						L.Add(buildID);
+						List<ushort> listBuildings = new List<ushort>();
+						ushort buildID = CustomGetNearestBuilding(vehicleData.GetLastFramePosition(),listBuildings);
+						listBuildings.Add(buildID);
 						for (int i=0; i <= NUM_BUILD; i++)
                         {
-							buildID = CustomGetNearestBuilding(vehicleData.GetLastFramePosition(), L);
-							L.Add(buildID);
+							buildID = CustomGetNearestBuilding(vehicleData.GetLastFramePosition(), listBuildings);
+							listBuildings.Add(buildID);
 							//Debug.Log(buildID);
                         }
 						#endregion
 
 						// Get nearest parked vehicles
 						#region
-						List<ushort> L1 = new List<ushort>();
-						ushort ran = GetNearestVehicle(vehicleData.GetLastFramePosition(),L1);
-						L1.Add(ran);
+						List<ushort> listParkedVehicles = new List<ushort>();
+						ushort ran = GetNearestVehicle(vehicleData.GetLastFramePosition(),listParkedVehicles);
+						listParkedVehicles.Add(ran);
 						for (int i = 0; i <= NUM_VEHICLE_PARKED; i++)
 						{
-							ran = GetNearestVehicle(vehicleData.GetLastFramePosition(), L1);
-							L1.Add(ran);
+							ran = GetNearestVehicle(vehicleData.GetLastFramePosition(), listParkedVehicles);
+							listParkedVehicles.Add(ran);
 							//Debug.Log(ran);
 						}
-						String strL1 = Concatenate(L1);
+						
 						//Debug.Log("parked" + strL1);
 						#endregion
 
@@ -1050,7 +1120,7 @@ namespace CustomizedAI
 						// Expanding roads
 						#region Expanding roads
 						ushort startNode = netManager.m_segments.m_buffer[position.m_segment].m_startNode;
-						int countDownNodes = expandNodes;
+						int countDownNodes = expandNodes+1;
 						List<ushort> segments = new List<ushort>();
 						List<ushort> nodes = new List<ushort>();
 						nodes.Add(startNode);
@@ -1073,6 +1143,7 @@ namespace CustomizedAI
 						List<Bezier3> beziersExpanded = new List<Bezier3>();
 						foreach (ushort s in segments)
                         {
+							Debug.Log("seg " + s);
 							beziersExpanded.Add(SegmentToBezier(s));
                         }
 						#endregion
@@ -1091,38 +1162,48 @@ namespace CustomizedAI
 
 						// Get the destination only for expanded roads
 						#region
-						int countDownPath = expandPath;
-						int count = pathManager.m_pathUnits.m_buffer[currentPath].m_positionCount;
-						int index;
-						PathUnit.Position finalPos;
-						while (countDownPath >= 1)
+						
+						uint currPathB = currentPath;
+						ushort finalSegExpanded = 0;
+						if (expandPath >= 1)
 						{
-							while (GetIndexPosition(position,currentPath,out index) == false && currentPath!=0)
+							int index;
+							while (GetIndexPosition(position, currPathB, out index) == false && currPathB != 0)
                             {
-								currentPath = pathManager.m_pathUnits.m_buffer[currentPath].m_nextPathUnit;
+								currPathB = pathManager.m_pathUnits.m_buffer[currPathB].m_nextPathUnit;
 
 							}
-							countDownPath--;
-
-
-							while (!pathManager.m_pathUnits.m_buffer[currentPath].GetNextPosition(index,out finalPos))
+							
+							if (index + expandPath > 11)
                             {
-								currentPath = pathManager.m_pathUnits.m_buffer[currentPath].m_nextPathUnit;
+								currPathB = pathManager.m_pathUnits.m_buffer[currPathB].m_nextPathUnit;
+								int add =( index + expandPath )% 11;
+								finalSegExpanded = pathManager.m_pathUnits.m_buffer[currPathB].GetPosition(add).m_segment;
 							}
-                            
+                            else
+                            {
+								finalSegExpanded = pathManager.m_pathUnits.m_buffer[currPathB].GetPosition(index + expandPath).m_segment;
+
+							}
+
+							Debug.Log("Final " + finalSegExpanded);
+
 						}
-							
-							
+						#endregion
 
-					
-						
 
-						
-                        #endregion
 
-                        // Writing and debugging
-                        #region Writing and Debugging
-                        StreamWriter sw = new StreamWriter(@"C:\Users\adeye\Desktop\Output1.txt", true);
+
+
+
+
+
+						// Writing and debugging
+						#region Writing and Debugging
+						Building[] buildings = Singleton<BuildingManager>.instance.m_buildings.m_buffer;
+						VehicleParked[] vehicleParkeds = Singleton<VehicleManager>.instance.m_parkedVehicles.m_buffer;
+
+						StreamWriter sw = new StreamWriter(@"C:\Users\adeye\Desktop\Output1.txt", true);
 						
 						//Debug.Log(vehicleData.Info.name + ", " +
 						//				vehicleID + "," +
@@ -1160,8 +1241,7 @@ namespace CustomizedAI
                                         myBezier.b + "," +
                                         myBezier.c + "," +
                                         myBezier.d + "," +
-                                        destination + "," +
-                                        buildID + "," +
+                                        
                                      //	parkID + "," +
                                      otherData.Info.name + ", " +
                                         otherID + ", " +
@@ -1174,7 +1254,36 @@ namespace CustomizedAI
 										otherBezier.c + "," +
 										otherBezier.d + ","
                                         );
-						
+
+						for (int i = 0; i < listBuildings.Count(); i++)
+						{
+							sw.Write("," + "BUILDINDS" + "," +
+								listBuildings[i] + "," +
+								buildings[listBuildings[i]].m_position.x + "," +
+								buildings[listBuildings[i]].m_position.z + "," +
+								buildings[listBuildings[i]].Info.m_size.x + "," +
+								buildings[listBuildings[i]].Info.m_size.z + "," +
+								buildings[listBuildings[i]].Info.m_size.y + "," +
+								buildings[listBuildings[i]].m_angle);
+						}
+
+						for (int i = 0; i < listParkedVehicles.Count(); i++)
+						{
+							sw.Write("," + "PARKED" + "," +
+								listParkedVehicles[i] + "," +
+								vehicleParkeds[listParkedVehicles[i]].Info.name + "," +
+								vehicleParkeds[listParkedVehicles[i]].m_position.x + "," +
+								vehicleParkeds[listParkedVehicles[i]].m_position.z + "," +
+								vehicleParkeds[listParkedVehicles[i]].m_rotation.y);
+						}
+
+						for (int i = 0; i < beziersExpanded.Count(); i++)
+						{
+							WriteBezier(beziersExpanded[i], sw);
+						}
+
+
+						WriteBezier(SegmentToBezier(finalSegExpanded), sw);
 
 						sw.Close();
                         #endregion
@@ -1868,11 +1977,11 @@ namespace CustomizedAI
 			for (int i=0; i<numSeg;i++)
             {
 				ushort segment = instance.m_nodes.m_buffer[nodeID].GetSegment(i);
-				Debug.Log("1"+segment);
+				//Debug.Log("1 "+segment);
 				if (!L.Contains(segment))
                 {
 					L.Add(segment);
-					Debug.Log("2"+segment);
+					//Debug.Log("2 "+segment);
 					nodes.Add(instance.m_segments.m_buffer[segment].GetOtherNode(nodeID));
                 }
             }
@@ -1892,6 +2001,13 @@ namespace CustomizedAI
 			Vector3 B = Vector3.zero;
 			NetSegment.CalculateMiddlePoints(centerStartNode, startDir, centerEndNode, endDir, false, false, out A, out B);
 			return new Bezier3(centerStartNode, A, B, centerEndNode);
+		}
+
+		public static void WriteBezier(Bezier3 bezier, StreamWriter sw)
+        {
+			
+			sw.Write("," + bezier.a + "," + bezier.b + "," + bezier.c + "," + bezier.d);
+			
 		}
 
 		public static bool GetIndexPosition(PathUnit.Position position,uint currentPath,  out int index)
