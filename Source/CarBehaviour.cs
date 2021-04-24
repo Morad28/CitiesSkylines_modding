@@ -1043,11 +1043,6 @@ namespace CustomizedAI
 
 
 					/////////// OUTPUT ///////////
-					
-					
-
-					
-					
 					// Opening angle: true if something is in the opening angle
 					bool IsInFront = Vector3.Dot(vehicleData.m_segment.b - vehicleData.m_segment.a, otherData.m_segment.a - vehicleData.m_segment.a) > VangleFront;
 					// Compare our direction with other vehicles direction : If it is close to our car direction then it is true (so we ignore it)

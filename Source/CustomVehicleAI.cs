@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ColossalFramework;
-using ICities;
-using UnityEngine;
-
+﻿using ICities;
 
 namespace CustomizedAI
 {
@@ -20,11 +11,6 @@ namespace CustomizedAI
 
         
     }
-
-
-
-   
-
 }
 
 
