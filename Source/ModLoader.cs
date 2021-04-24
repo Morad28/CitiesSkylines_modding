@@ -12,13 +12,6 @@ namespace CustomizedAI
     public class ModLoader : LoadingExtensionBase
     {
         
-
-        // Counting time
-
-
-
-
-
         // Called when the level is created
         public override void OnCreated(ILoading loading)
         {
