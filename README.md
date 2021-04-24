@@ -1,2 +1,2 @@
 # Cities Skylines mod: A mod for scenario generation.
-This repository an internship project to generate scenario from the game Cities: Skylines. 
+This repository was an internship project to generate scenario from the game Cities: Skylines. 
